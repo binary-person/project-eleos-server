@@ -65,10 +65,15 @@ routerWorker.get('/api/worker/submit', decodeIDToken, async (req, res) => {
     return res.status(500).json({ err: 'unknown error occurred while trying to update task data' });
   }
 
-  if (updateResult.value.taskData[req.query.taskId] === null) {
+  if (updateResult.value?.taskData[req.query.taskId] === null) {
     // possible race condition but we'll fix during refinement
     const user = await db.collection('users').findOne({ id: req.currentUser.email });
-    await db.collection('users').updateOne({ id: req.currentUser.email }, { $set: { ['projectEarnings.' + req.query.projectid]: updateResult.value.pricePerTask + (user.projectEarnings[req.query.projectid] || 0) } });
+    await db.collection('users').updateOne({ id: req.currentUser.email }, {
+      $set: {
+        ['projectEarnings.' + req.query.projectid]: updateResult.value.pricePerTask + (user.projectEarnings[req.query.projectid] || 0),
+        ['tasksCompleted.' + req.query.projectid]: 1 + (user.tasksCompleted[req.query.projectid] || 0)
+      }
+    });
   }
 
   res.json({});

@@ -12,7 +12,8 @@ routerUser.get('/api/user', decodeIDToken, async (req, res) => {
       id: req.currentUser.email,
       displayName: req.currentUser.name,
       projects: [],
-      projectEarnings: {}
+      projectEarnings: {},
+      tasksCompleted: {}
     };
     await db.collection('users').insertOne(newUser);
     return res.json(newUser);
