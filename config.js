@@ -8,6 +8,7 @@ const client = new MongoClient(process.env.MONGODB_URL);
 await client.connect();
 export const db = client.db('project-eleos');
 await db.collection('projects').createIndex({ id: 1 }, { unique: true });
+await db.collection('users').createIndex({ id: 1 }, { unique: true });
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(fs.readFileSync('firebase-service-account.json')))
